@@ -1,0 +1,8 @@
+Flask==0.10.1
+Jinja2==2.7.1
+MarkupSafe==0.18
+Twisted==13.1.0
+Werkzeug==0.9.3
+autobahn==0.5.14
+itsdangerous==0.23
+zope.interface==4.0.5

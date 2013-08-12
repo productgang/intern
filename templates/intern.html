@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Product Gang Intern</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="static/css/style.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <h1>{{ config.title }}</h1>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Description</th>
+          <th>State</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for serviceid in config.services %}
+        {% with service=config.services[serviceid] %}
+        <tr>
+          <td>{{ service.name }}</td>
+          <td>{{ service.description }}</td>
+          <td>
+            <div class="btn-group" data-id="{{ serviceid }}">
+              <button type="button" class="{{ serviceid }} btn{% if service.status=='running' %} btn-success{% else %} btn-danger{% endif %} dropdown-toggle" data-toggle="dropdown">
+                <span class="text">{% if service.status=='running' %}Running{% else %}Stopped{% endif %}</span> <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#" class="{% if service.status=='running' %}stop{% else %}start{% endif %} action-btn">{% if service.status=='running' %}Stop{% else %}Start{% endif %}</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" class="terminal">
+            <pre id="{{ serviceid }}"></pre>
+          </td>
+        </tr>
+        {% endwith %}
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+       window.onload = function() {
+          window.webSocket = new WebSocket("ws://localhost:9000");
+          window.webSocket.onmessage = function(e) {
+            var data = JSON.parse(e.data);
+            if(data.action == 'stopped') {
+              var pre = $("#" + data.process);
+              pre.append('Process stopped\n');
+              pre[0].scrollTop = pre[0].scrollHeight;
+              var actionbtn = $('.' + data.process);
+              $('.text', actionbtn).text('Stopped');
+              actionbtn.removeClass('btn-success').addClass('btn-danger');
+              $('.stop', $(actionbtn).next()).removeClass('stop').addClass('start').text('Start');
+            } else if(data.action == 'started') {
+              var actionbtn = $('.' + data.process);
+              $('.text', actionbtn).text('Running');
+              actionbtn.removeClass('btn-warning').addClass('btn-success');
+              $('.start', $(actionbtn).next()).removeClass('start').addClass('stop').text('Stop');
+              var pre = $("#" + data.process);
+              pre.append('Process started\n');
+              pre[0].scrollTop = pre[0].scrollHeight;
+            } else {
+              var pre = $("#" + data.process);
+              pre.append(data.line);
+              pre[0].scrollTop = pre[0].scrollHeight;
+            }
+          }
+        }
+        $(function(){
+          $('.action-btn').click(function() {
+            if($(this).hasClass('stop')) {
+              var identifier = $(this).parent().parent().parent().data('id');
+              var actionbtn = $(this).parent().parent().parent().find('button');
+              $('.text', actionbtn).text('Stopping...');
+              var that = this;
+              actionbtn.removeClass('btn-success').addClass('btn-warning');
+              $.get('/process/stop/' + identifier, function() {
+                $('.text', actionbtn).text('Stopped');
+                actionbtn.removeClass('btn-warning').addClass('btn-danger');
+                $(that).removeClass('stop').addClass('start').text('Start');
+              });
+            } else if($(this).hasClass('start')) {
+              var identifier = $(this).parent().parent().parent().data('id');
+              var actionbtn = $(this).parent().parent().parent().find('button');
+              $('.text', actionbtn).text('Starting...');
+              var that = this;
+              actionbtn.removeClass('btn-danger').addClass('btn-warning');
+              window.webSocket.send(JSON.stringify({'start': identifier}));
+            }
+          });
+        });
+    </script>
+  </body>
+</html>

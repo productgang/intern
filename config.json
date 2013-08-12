@@ -1,0 +1,26 @@
+{
+    "title": "Product Gang Intern",
+    "services": {
+        "devserver": {
+            "name": "Development Server",
+            "description": "The development server, running on port 8000",
+            "command": "/home/vagrant/env_project/bin/python",
+            "args": ["manage.py", "runserver", "0.0.0.0:8000", "--settings", "project.settings.local"],
+            "path": "/home/vagrant/project/"
+        },
+        "migrate": {
+            "name": "Migrate",
+            "description": "Runs the database migrations",
+            "command": "/home/vagrant/env_project/bin/python",
+            "args": ["manage.py", "migrate", "--settings", "project.settings.local"],
+            "path": "/home/vagrant/project/"
+        },
+        "tests": {
+            "name": "Tests",
+            "description": "Runs the unit tests",
+            "command": "/home/vagrant/env_project/bin/python",
+            "args": ["manage.py", "test", "--settings", "project.settings.test"],
+            "path": "/home/vagrant/project/"
+        }
+    }
+}
