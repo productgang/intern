@@ -18,12 +18,12 @@ Clone the repo, edit the `config.json` to fit your needs.
 
 Add the intern folder to your vagrant config:
 
-    stages.vm.synced_folder "./intern/", "/home/vagrant/intern"
+    config.vm.synced_folder "./intern/", "/home/vagrant/intern"
 
 And forward ports 5000 (http) and  9000 (websockets):
 
-    stages.vm.network :forwarded_port, guest: 5000, host: 5000
-    stages.vm.network :forwarded_port, guest: 9000, host: 9000
+    config.vm.network :forwarded_port, guest: 5000, host: 5000
+    config.vm.network :forwarded_port, guest: 9000, host: 9000
 
 Also you need a virtualenv, in which you have to install the requirements.txt.
 You could e.g. use the python cookbook:
@@ -58,23 +58,23 @@ An example configuration could look like this:
             "devserver": {
                 "name": "Development Server",
                 "description": "The development server, running on port 8000",
-                "command": "/home/vagrant/env_stages/bin/python",
-                "args": ["manage.py", "runserver", "0.0.0.0:8000", "--settings", "stages_badmin.settings.local"],
-                "path": "/home/vagrant/stages/"
+                "command": "/home/vagrant/env_project/bin/python",
+                "args": ["manage.py", "runserver", "0.0.0.0:8000", "--settings", "project.settings.local"],
+                "path": "/home/vagrant/project/"
             },
             "migrate": {
                 "name": "Migrate",
                 "description": "Runs the database migrations",
-                "command": "/home/vagrant/env_stages/bin/python",
-                "args": ["manage.py", "migrate", "--settings", "stages_badmin.settings.local"],
-                "path": "/home/vagrant/stages/"
+                "command": "/home/vagrant/env_project/bin/python",
+                "args": ["manage.py", "migrate", "--settings", "project.settings.local"],
+                "path": "/home/vagrant/project/"
             },
             "tests": {
                 "name": "Tests",
                 "description": "Runs the unit tests",
-                "command": "/home/vagrant/env_stages/bin/python",
-                "args": ["manage.py", "test", "--settings", "stages_badmin.settings.test"],
-                "path": "/home/vagrant/stages/"
+                "command": "/home/vagrant/env_project/bin/python",
+                "args": ["manage.py", "test", "--settings", "project.settings.test"],
+                "path": "/home/vagrant/project/"
             }
         }
     }
